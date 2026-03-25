@@ -1,0 +1,26 @@
+{
+  "name": "platform-feedback",
+  "version": "0.1.0",
+  "description": "Single-import feedback SDK for all platform frontend microservices",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".":            "./src/index.js",
+    "./components": "./src/components/FeedbackButton.jsx"
+  },
+  "peerDependencies": {
+    "react":   ">=18",
+    "vue":     ">=3",
+    "@angular/core": ">=17"
+  },
+  "peerDependenciesMeta": {
+    "react":            { "optional": true },
+    "vue":              { "optional": true },
+    "@angular/core":    { "optional": true }
+  },
+  "dependencies": {
+    "uuid": "^9.0.0"
+  },
+  "keywords": ["feedback", "platform", "bug-reporting"],
+  "license": "UNLICENSED"
+}
