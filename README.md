@@ -24,13 +24,13 @@ FEEDBACK_ENV=staging                 # staging | production
 ## Python — Install
 
 ```bash
-pip install git+https://github.com/your-org/platform-feedback.git#subdirectory=python
+pip install git+https://github.com/AutonomyOne/vn-platform-feedback.git#subdirectory=python
 ```
 
 ## JS — Install
 
 ```bash
-npm install github:your-org/platform-feedback#path=js
+npm install github:AutonomyOne/vn-platform-feedback#path=js
 ```
 
 ---
@@ -177,3 +177,15 @@ initExpress(app)
 4. Done
 
 No feedback logic lives in the microservice.
+
+---
+
+## Development Setup
+
+After cloning, install the pre-push hook:
+
+```bash
+./scripts/setup-hooks.sh
+```
+
+This runs ruff, eslint, pytest, and vitest before every push to `dev` or `main`. Skip with `git push --no-verify` if needed.

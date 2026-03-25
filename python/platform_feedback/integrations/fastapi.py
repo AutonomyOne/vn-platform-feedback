@@ -1,7 +1,7 @@
 import traceback
+
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware
 
 from platform_feedback.client import FeedbackClient
 from platform_feedback.payload import build_payload
