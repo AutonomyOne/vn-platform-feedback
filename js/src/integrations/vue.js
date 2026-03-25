@@ -29,7 +29,7 @@ export function submit(options) {
  * Vue 3 Plugin.
  * Install in main.js:
  *
- *   import { PlatformFeedbackPlugin } from 'platform-feedback'
+ *   import { PlatformFeedbackPlugin } from 'platform-feedback/vue'
  *   app.use(PlatformFeedbackPlugin)
  */
 export const PlatformFeedbackPlugin = {

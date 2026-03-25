@@ -76,15 +76,7 @@ export class FeedbackErrorBoundary {
   render(): unknown;
 }
 
-/** Vue 3 plugin. Use with app.use(PlatformFeedbackPlugin). */
-export const PlatformFeedbackPlugin: {
-  install(app: unknown): void;
-};
-
-/** Angular module. Use PlatformFeedbackModule.forRoot(). */
-export const PlatformFeedbackModule: {
-  forRoot(): unknown;
-};
-
-export const FeedbackService: unknown;
-export const FeedbackErrorHandler: unknown;
+// Vue and Angular are available via dedicated export paths to avoid
+// pulling in their peer dependencies for React/Next.js consumers:
+//   import { PlatformFeedbackPlugin } from 'platform-feedback/vue'
+//   import { PlatformFeedbackModule } from 'platform-feedback/angular'

@@ -197,7 +197,7 @@ root.render(
 ### Vue 3
 ```javascript
 // main.js
-import { PlatformFeedbackPlugin } from 'platform-feedback'
+import { PlatformFeedbackPlugin } from 'platform-feedback/vue'
 app.use(PlatformFeedbackPlugin)
 ```
 
@@ -215,7 +215,7 @@ import FeedbackButton from 'platform-feedback/components/FeedbackButton.vue'
 ### Angular 17+
 ```typescript
 // app.module.ts or main.ts
-import { PlatformFeedbackModule } from 'platform-feedback'
+import { PlatformFeedbackModule } from 'platform-feedback/angular'
 PlatformFeedbackModule.forRoot()
 
 // Any component template:
