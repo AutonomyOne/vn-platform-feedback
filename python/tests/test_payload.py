@@ -1,8 +1,8 @@
 import platform
-from datetime import datetime, timezone
-from unittest.mock import patch
+from datetime import datetime
 
 import pytest
+
 from platform_feedback.config import FeedbackConfig
 from platform_feedback.payload import build_payload
 
@@ -22,12 +22,24 @@ class TestPayloadStructure:
     def test_contains_all_required_keys(self, config):
         payload = build_payload(config, title="Test", description="Desc")
         expected_keys = {
-            "submission_type", "timestamp", "session_id",
-            "app_name", "microservice", "environment",
-            "type", "severity", "title", "description",
-            "user_id", "user_email", "user_role",
-            "page", "os",
-            "sentry_event_id", "error_message", "stack_trace",
+            "submission_type",
+            "timestamp",
+            "session_id",
+            "app_name",
+            "microservice",
+            "environment",
+            "type",
+            "severity",
+            "title",
+            "description",
+            "user_id",
+            "user_email",
+            "user_role",
+            "page",
+            "os",
+            "sentry_event_id",
+            "error_message",
+            "stack_trace",
             "screenshot_url",
         }
         assert expected_keys.issubset(payload.keys())
@@ -87,8 +99,12 @@ class TestOverrides:
 
     def test_user_context(self, config):
         payload = build_payload(
-            config, title="T", description="D",
-            user_id="u1", user_email="u@test.com", user_role="vet",
+            config,
+            title="T",
+            description="D",
+            user_id="u1",
+            user_email="u@test.com",
+            user_role="vet",
         )
         assert payload["user_id"] == "u1"
         assert payload["user_email"] == "u@test.com"
@@ -100,8 +116,11 @@ class TestOverrides:
 
     def test_error_fields(self, config):
         payload = build_payload(
-            config, title="T", description="D",
-            error_message="boom", stack_trace="Traceback...",
+            config,
+            title="T",
+            description="D",
+            error_message="boom",
+            stack_trace="Traceback...",
             sentry_event_id="abc123",
         )
         assert payload["error_message"] == "boom"
@@ -110,7 +129,9 @@ class TestOverrides:
 
     def test_screenshot_url(self, config):
         payload = build_payload(
-            config, title="T", description="D",
+            config,
+            title="T",
+            description="D",
             screenshot_url="https://cdn.example.com/shot.png",
         )
         assert payload["screenshot_url"] == "https://cdn.example.com/shot.png"
@@ -119,7 +140,9 @@ class TestOverrides:
 class TestExtraFields:
     def test_extra_merged_into_payload(self, config):
         payload = build_payload(
-            config, title="T", description="D",
+            config,
+            title="T",
+            description="D",
             extra={"method": "POST", "url": "/api/test"},
         )
         assert payload["method"] == "POST"

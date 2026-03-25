@@ -1,9 +1,10 @@
 import time
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
+
+from platform_feedback.client import DEDUP_WINDOW, FeedbackClient, _is_duplicate, _seen
 from platform_feedback.config import FeedbackConfig
-from platform_feedback.client import FeedbackClient, _is_duplicate, _seen, DEDUP_WINDOW
 
 
 @pytest.fixture
@@ -85,10 +86,9 @@ class TestFeedbackClientSend:
         mock_send.return_value = None
         # Call _send_sync directly to verify args
         from platform_feedback.client import _send_sync
+
         _send_sync(config.url, config.api_key, _payload(), config.timeout)
-        mock_send.assert_called_once_with(
-            config.url, config.api_key, _payload(), config.timeout
-        )
+        mock_send.assert_called_once_with(config.url, config.api_key, _payload(), config.timeout)
 
 
 class TestSendSyncErrorHandling:
@@ -99,4 +99,5 @@ class TestSendSyncErrorHandling:
         mock_client_cls.return_value.__enter__.return_value.post.side_effect = Exception("timeout")
         # Should not raise
         from platform_feedback.client import _send_sync
+
         _send_sync(config.url, config.api_key, _payload(), config.timeout)

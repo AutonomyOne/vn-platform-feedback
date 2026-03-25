@@ -1,5 +1,5 @@
-import traceback
 import logging
+import traceback
 
 from platform_feedback.client import FeedbackClient
 from platform_feedback.payload import build_payload

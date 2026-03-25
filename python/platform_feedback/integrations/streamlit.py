@@ -1,17 +1,15 @@
-import os
-import uuid
 import platform as _platform
-from datetime import datetime, timezone
+import uuid
 
 import streamlit as st
 
 from platform_feedback.client import FeedbackClient
 from platform_feedback.payload import build_payload
 
-TYPE_OPTIONS     = ["bug", "cosmetic", "suggestion"]
+TYPE_OPTIONS = ["bug", "cosmetic", "suggestion"]
 SEVERITY_OPTIONS = ["critical", "high", "low"]
-TYPE_EMOJI       = {"bug": "🐛 Bug", "cosmetic": "🎨 Cosmetic", "suggestion": "💡 Suggestion"}
-SEV_EMOJI        = {"critical": "🔴 Critical", "high": "🟠 High", "low": "🟡 Low"}
+TYPE_EMOJI = {"bug": "🐛 Bug", "cosmetic": "🎨 Cosmetic", "suggestion": "💡 Suggestion"}
+SEV_EMOJI = {"critical": "🔴 Critical", "high": "🟠 High", "low": "🟡 Low"}
 
 
 def _session_id() -> str:
@@ -63,9 +61,9 @@ class StreamlitIntegration:
         with col2:
             severity = st.selectbox("Severity", SEVERITY_OPTIONS, format_func=lambda x: SEV_EMOJI[x], key="_pf_sev")
 
-        title       = st.text_input("Title", max_chars=120, key="_pf_title")
+        title = st.text_input("Title", max_chars=120, key="_pf_title")
         description = st.text_area("Description", height=100, key="_pf_desc")
-        screenshot  = st.file_uploader("Screenshot (optional)", type=["png", "jpg"], key="_pf_ss")
+        screenshot = st.file_uploader("Screenshot (optional)", type=["png", "jpg"], key="_pf_ss")
 
         if st.button("Submit", type="primary", key="_pf_submit"):
             if hp:
@@ -100,6 +98,7 @@ class StreamlitIntegration:
 
     def _upload_screenshot(self, file) -> str | None:
         import logging
+
         import requests
 
         _logger = logging.getLogger("platform_feedback")
@@ -123,8 +122,7 @@ class StreamlitIntegration:
                 timeout=10,
             )
             urls = res.json()
-            requests.put(urls["upload_url"], data=data,
-                         headers={"Content-Type": content_type}, timeout=30)
+            requests.put(urls["upload_url"], data=data, headers={"Content-Type": content_type}, timeout=30)
             return urls["public_url"]
         except Exception as e:
             _logger.debug(f"platform-feedback: screenshot upload failed: {e}")
@@ -134,6 +132,7 @@ class StreamlitIntegration:
     def submit_error(self, exc: Exception, page: str = None):
         """Programmatic submission from a Streamlit exception handler."""
         import traceback
+
         payload = build_payload(
             self.config,
             submission_type="programmatic",

@@ -1,7 +1,8 @@
 import os
-import pytest
-from platform_feedback.config import FeedbackConfig
 
+import pytest
+
+from platform_feedback.config import FeedbackConfig
 
 VALID_ENV = {
     "FEEDBACK_SERVICE_URL": "https://feedback.example.com/",
@@ -61,12 +62,15 @@ class TestFromEnv:
 
 
 class TestMissingVars:
-    @pytest.mark.parametrize("missing_var", [
-        "FEEDBACK_SERVICE_URL",
-        "FEEDBACK_API_KEY",
-        "FEEDBACK_APP_NAME",
-        "FEEDBACK_MICROSERVICE",
-    ])
+    @pytest.mark.parametrize(
+        "missing_var",
+        [
+            "FEEDBACK_SERVICE_URL",
+            "FEEDBACK_API_KEY",
+            "FEEDBACK_APP_NAME",
+            "FEEDBACK_MICROSERVICE",
+        ],
+    )
     def test_raises_on_missing_required_var(self, monkeypatch, missing_var):
         _set_env(monkeypatch)
         monkeypatch.delenv(missing_var)

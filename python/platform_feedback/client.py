@@ -1,9 +1,8 @@
 import asyncio
 import hashlib
 import logging
-import time
 import threading
-from typing import Optional
+import time
 
 import httpx
 
@@ -81,9 +80,7 @@ class FeedbackClient:
         try:
             loop = asyncio.get_event_loop()
             if loop.is_running():
-                loop.create_task(
-                    _send_async(self.config.url, self.config.api_key, payload, self.config.timeout)
-                )
+                loop.create_task(_send_async(self.config.url, self.config.api_key, payload, self.config.timeout))
             else:
                 self.send(payload)  # fallback to thread
         except RuntimeError:

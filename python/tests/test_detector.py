@@ -1,7 +1,6 @@
 import sys
 from unittest.mock import patch
 
-import pytest
 from platform_feedback.detector import detect_framework
 
 
@@ -32,7 +31,8 @@ class TestDetectFramework:
 
     def test_defaults_to_headless(self):
         # Ensure none of the frameworks are loaded
-        mods = {k: v for k, v in sys.modules.items()
-                if k not in ("fastapi", "starlette", "flask", "django", "streamlit")}
+        mods = {
+            k: v for k, v in sys.modules.items() if k not in ("fastapi", "starlette", "flask", "django", "streamlit")
+        }
         with patch.dict(sys.modules, mods, clear=True):
             assert detect_framework() == "headless"

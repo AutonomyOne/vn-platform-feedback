@@ -1,5 +1,7 @@
 import traceback
-from flask import request as flask_request, jsonify
+
+from flask import jsonify
+from flask import request as flask_request
 
 from platform_feedback.client import FeedbackClient
 from platform_feedback.payload import build_payload

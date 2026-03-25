@@ -39,7 +39,7 @@ function getBrowserContext() {
   };
 }
 
-export default function FeedbackModal({ user, appName, appVersion, onClose, onSubmit }) {
+export default function FeedbackModal({ user, appName: _appName, appVersion: _appVersion, onClose, onSubmit }) {
   const [type, setType]               = useState("bug");
   const [severity, setSeverity]       = useState("high");
   const [title, setTitle]             = useState("");
@@ -89,7 +89,7 @@ export default function FeedbackModal({ user, appName, appVersion, onClose, onSu
       let sentryEventId = null;
       try {
         sentryEventId = window.__SENTRY__?.hub?.lastEventId?.() || null;
-      } catch (e) {
+      } catch (_e) {
         // Sentry not available — safe to ignore
       }
 
@@ -111,7 +111,7 @@ export default function FeedbackModal({ user, appName, appVersion, onClose, onSu
 
       await onSubmit(payload);
       setSubmitted(true);
-    } catch (e) {
+    } catch (_e) {
       setError("Submission failed. Please try again.");
     } finally {
       setSubmitting(false);

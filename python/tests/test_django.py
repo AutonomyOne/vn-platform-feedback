@@ -1,8 +1,9 @@
-import pytest
 from unittest.mock import MagicMock
 
-from platform_feedback.config import FeedbackConfig
+import pytest
+
 from platform_feedback.client import FeedbackClient
+from platform_feedback.config import FeedbackConfig
 from platform_feedback.integrations.django import DjangoFeedbackMiddleware, DjangoIntegration
 
 

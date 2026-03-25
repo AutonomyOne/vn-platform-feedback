@@ -26,12 +26,14 @@
     "@angular/core":    { "optional": true }
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "lint": "eslint src/"
   },
   "dependencies": {
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "eslint": "^9.0.0",
     "vitest": "^3.0.0"
   },
   "keywords": ["feedback", "platform", "bug-reporting"],
