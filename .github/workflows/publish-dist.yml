@@ -1,0 +1,78 @@
+name: Publish dist branches
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish-js-dist:
+    name: Publish js-dist
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build and push js-dist branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Create a temporary directory with only js/ contents
+          TMPDIR=$(mktemp -d)
+          cp -r js/* "$TMPDIR/"
+
+          # Remove dev-only files that consumers don't need
+          rm -rf "$TMPDIR/tests" "$TMPDIR/eslint.config.js" "$TMPDIR/node_modules"
+
+          # Get the commit info for the message
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+
+          # Switch to an orphan branch (or update existing)
+          git checkout --orphan js-dist-tmp
+          git rm -rf .
+          cp -r "$TMPDIR/"* .
+          git add -A
+          git commit -m "js-dist: ${COMMIT_MSG} (${COMMIT_SHA})"
+
+          # Force-push to js-dist
+          git push origin HEAD:js-dist --force
+
+  publish-python-dist:
+    name: Publish python-dist
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build and push python-dist branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Create a temporary directory with only python/ contents
+          TMPDIR=$(mktemp -d)
+          cp -r python/* "$TMPDIR/"
+
+          # Remove dev-only files that consumers don't need
+          rm -rf "$TMPDIR/tests" "$TMPDIR/.venv" "$TMPDIR/.pytest_cache" "$TMPDIR/.ruff_cache"
+
+          # Get the commit info for the message
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+
+          # Switch to an orphan branch (or update existing)
+          git checkout --orphan python-dist-tmp
+          git rm -rf .
+          cp -r "$TMPDIR/"* .
+          git add -A
+          git commit -m "python-dist: ${COMMIT_MSG} (${COMMIT_SHA})"
+
+          # Force-push to python-dist
+          git push origin HEAD:python-dist --force
