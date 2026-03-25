@@ -8,11 +8,11 @@
  *   initFeedback(app)        // pass app instance for Express
  *
  * Vue:
- *   import { PlatformFeedbackPlugin } from 'platform-feedback'
+ *   import { PlatformFeedbackPlugin } from 'platform-feedback/vue'
  *   app.use(PlatformFeedbackPlugin)
  *
  * Angular:
- *   import { PlatformFeedbackModule } from 'platform-feedback'
+ *   import { PlatformFeedbackModule } from 'platform-feedback/angular'
  *   PlatformFeedbackModule.forRoot()
  */
 
@@ -21,13 +21,10 @@ import { submit } from "./integrations/browser.js";
 import { initReact, FeedbackErrorBoundary } from "./integrations/react.js";
 import { initNextjs, onAppError } from "./integrations/nextjs.js";
 import { initExpress } from "./integrations/express.js";
-import { PlatformFeedbackPlugin } from "./integrations/vue.js";
-import { PlatformFeedbackModule, FeedbackService, FeedbackErrorHandler } from "./angular/feedback.module.ts";
 
 export const version = "0.1.0";
 
-export { submit, FeedbackErrorBoundary, onAppError, PlatformFeedbackPlugin };
-export { PlatformFeedbackModule, FeedbackService, FeedbackErrorHandler };
+export { submit, FeedbackErrorBoundary, onAppError };
 
 export function initFeedback(app = null) {
   const framework = detectFramework();
@@ -36,14 +33,16 @@ export function initFeedback(app = null) {
     case "nextjs":
       return initNextjs();
     case "vue":
-      // Vue uses plugin pattern — initFeedback() is a no-op,
-      // user installs via app.use(PlatformFeedbackPlugin)
-      console.info("[platform-feedback] Vue detected. Use app.use(PlatformFeedbackPlugin) instead.");
+      console.info(
+        "[platform-feedback] Vue detected. Use:\n" +
+        "  import { PlatformFeedbackPlugin } from 'platform-feedback/vue'"
+      );
       return null;
     case "angular":
-      // Angular uses module pattern — initFeedback() is a no-op,
-      // user imports PlatformFeedbackModule.forRoot()
-      console.info("[platform-feedback] Angular detected. Use PlatformFeedbackModule.forRoot().");
+      console.info(
+        "[platform-feedback] Angular detected. Use:\n" +
+        "  import { PlatformFeedbackModule } from 'platform-feedback/angular'"
+      );
       return null;
     case "express":
       return initExpress(app);
