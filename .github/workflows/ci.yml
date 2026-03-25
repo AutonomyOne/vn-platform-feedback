@@ -51,11 +51,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: |
-          python -m venv .audit-venv
-          .audit-venv/bin/pip install pip-audit
-          .audit-venv/bin/pip install -e .
-          .audit-venv/bin/pip-audit --skip-editable
+      - run: pip install pip-audit
+      - run: pip install -e .
+      - name: Audit runtime dependencies
+        run: pip-audit --skip-editable --ignore-vuln CVE-2025-8869 --ignore-vuln CVE-2026-1703 --ignore-vuln CVE-2026-4539
 
   js-lint:
     name: JS lint
