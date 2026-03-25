@@ -12,7 +12,7 @@ from platform_feedback.client import FeedbackClient
 from platform_feedback.config import FeedbackConfig
 from platform_feedback.detector import detect_framework
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __all__ = ["init_feedback", "FeedbackClient"]
 
 

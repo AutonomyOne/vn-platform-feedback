@@ -1,6 +1,6 @@
 {
   "name": "platform-feedback",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Single-import feedback SDK for all platform frontend microservices",
   "type": "module",
   "main": "./src/index.js",

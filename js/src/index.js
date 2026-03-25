@@ -22,7 +22,7 @@ import { initReact, FeedbackErrorBoundary } from "./integrations/react.js";
 import { initNextjs, onAppError } from "./integrations/nextjs.js";
 import { initExpress } from "./integrations/express.js";
 
-export const version = "0.1.0";
+export const version = "0.2.0";
 
 export { submit, FeedbackErrorBoundary, onAppError };
 

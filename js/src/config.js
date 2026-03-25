@@ -1,38 +1,58 @@
 /**
  * Reads feedback config from environment variables.
  * Works across Next.js (NEXT_PUBLIC_*), Vite (VITE_*), and Node.js.
+ *
+ * IMPORTANT: Each env var must appear as a static string literal
+ * (e.g. process.env.NEXT_PUBLIC_FEEDBACK_SERVICE_URL) so that
+ * Next.js/Webpack/Turbopack and Vite can find and inline them
+ * at build time. Dynamic access like process.env[key] does NOT work.
  */
 export function getConfig() {
-  const env = (key) =>
-    (typeof process !== "undefined" && process.env?.[key]) ||
-    (typeof import.meta !== "undefined" && import.meta?.env?.[key]) ||
+  const url =
+    process.env.NEXT_PUBLIC_FEEDBACK_SERVICE_URL ||
+    process.env.VITE_FEEDBACK_SERVICE_URL ||
+    process.env.FEEDBACK_SERVICE_URL ||
+    (typeof import.meta !== "undefined" && import.meta?.env?.VITE_FEEDBACK_SERVICE_URL) ||
     null;
 
-  const url =
-    env("NEXT_PUBLIC_FEEDBACK_SERVICE_URL") ||
-    env("VITE_FEEDBACK_SERVICE_URL") ||
-    env("FEEDBACK_SERVICE_URL");
-
   const apiKey =
-    env("NEXT_PUBLIC_FEEDBACK_API_KEY") ||
-    env("VITE_FEEDBACK_API_KEY") ||
-    env("FEEDBACK_API_KEY");
+    process.env.NEXT_PUBLIC_FEEDBACK_API_KEY ||
+    process.env.VITE_FEEDBACK_API_KEY ||
+    process.env.FEEDBACK_API_KEY ||
+    (typeof import.meta !== "undefined" && import.meta?.env?.VITE_FEEDBACK_API_KEY) ||
+    null;
 
   const appName =
-    env("NEXT_PUBLIC_FEEDBACK_APP_NAME") ||
-    env("VITE_FEEDBACK_APP_NAME") ||
-    env("FEEDBACK_APP_NAME");
+    process.env.NEXT_PUBLIC_FEEDBACK_APP_NAME ||
+    process.env.VITE_FEEDBACK_APP_NAME ||
+    process.env.FEEDBACK_APP_NAME ||
+    (typeof import.meta !== "undefined" && import.meta?.env?.VITE_FEEDBACK_APP_NAME) ||
+    null;
 
   const microservice =
-    env("NEXT_PUBLIC_FEEDBACK_MICROSERVICE") ||
-    env("VITE_FEEDBACK_MICROSERVICE") ||
-    env("FEEDBACK_MICROSERVICE");
+    process.env.NEXT_PUBLIC_FEEDBACK_MICROSERVICE ||
+    process.env.VITE_FEEDBACK_MICROSERVICE ||
+    process.env.FEEDBACK_MICROSERVICE ||
+    (typeof import.meta !== "undefined" && import.meta?.env?.VITE_FEEDBACK_MICROSERVICE) ||
+    null;
 
   const environment =
-    env("NEXT_PUBLIC_FEEDBACK_ENV") ||
-    env("VITE_FEEDBACK_ENV") ||
-    env("FEEDBACK_ENV") ||
+    process.env.NEXT_PUBLIC_FEEDBACK_ENV ||
+    process.env.VITE_FEEDBACK_ENV ||
+    process.env.FEEDBACK_ENV ||
+    (typeof import.meta !== "undefined" && import.meta?.env?.VITE_FEEDBACK_ENV) ||
     "staging";
+
+  // Diagnostic logging — helps debug config issues in consumer apps
+  if (typeof console !== "undefined" && console.debug) {
+    console.debug("[platform-feedback] Config resolved:", {
+      url: url ? `${url.slice(0, 30)}...` : null,
+      apiKey: apiKey ? "***" : null,
+      appName,
+      microservice,
+      environment,
+    });
+  }
 
   const missing = [
     !url && "FEEDBACK_SERVICE_URL",
