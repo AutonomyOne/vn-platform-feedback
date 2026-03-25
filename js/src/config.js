@@ -34,12 +34,26 @@ export function getConfig() {
     env("FEEDBACK_ENV") ||
     "staging";
 
-  if (!url || !apiKey || !appName || !microservice) {
-    console.warn(
-      "[platform-feedback] Missing env vars. Required: " +
-      "FEEDBACK_SERVICE_URL, FEEDBACK_API_KEY, FEEDBACK_APP_NAME, FEEDBACK_MICROSERVICE"
+  const missing = [
+    !url && "FEEDBACK_SERVICE_URL",
+    !apiKey && "FEEDBACK_API_KEY",
+    !appName && "FEEDBACK_APP_NAME",
+    !microservice && "FEEDBACK_MICROSERVICE",
+  ].filter(Boolean);
+
+  if (missing.length) {
+    throw new Error(
+      `[platform-feedback] Missing required env vars: ${missing.join(", ")}. ` +
+      `Prefix with NEXT_PUBLIC_ (Next.js) or VITE_ (Vite) as needed.`
     );
   }
 
-  return { url, apiKey, appName, microservice, environment };
+  // Validate URL format
+  try {
+    new URL(url);
+  } catch {
+    throw new Error(`[platform-feedback] FEEDBACK_SERVICE_URL is not a valid URL: "${url}"`);
+  }
+
+  return { url: url.replace(/\/+$/, ""), apiKey, appName, microservice, environment };
 }

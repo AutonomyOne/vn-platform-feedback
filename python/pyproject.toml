@@ -1,6 +1,6 @@
 [build-system]
 requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "platform-feedback"
@@ -17,6 +17,7 @@ starlette  = ["starlette>=0.37.0"]
 django     = ["django>=4.2"]
 flask      = ["flask>=3.0.0"]
 streamlit  = ["streamlit>=1.35.0", "requests>=2.31.0"]
+test       = ["pytest>=8.0"]
 all        = [
     "fastapi>=0.111.0",
     "starlette>=0.37.0",

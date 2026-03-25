@@ -23,9 +23,10 @@ class DjangoFeedbackMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
         if DjangoFeedbackMiddleware._client is None:
-            logger.warning(
-                "platform-feedback: init_feedback() was not called. "
-                "Call it in your Django AppConfig.ready() or settings."
+            raise RuntimeError(
+                "platform-feedback: init_feedback() must be called before "
+                "DjangoFeedbackMiddleware is loaded. Call it in your "
+                "Django AppConfig.ready() method."
             )
 
     def __call__(self, request):

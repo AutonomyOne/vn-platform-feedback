@@ -84,8 +84,8 @@ class StreamlitIntegration:
                 submission_type="user",
                 feedback_type=fb_type,
                 severity=severity,
-                title=title,
-                description=description,
+                title=title.strip()[:120],
+                description=description.strip()[:5000],
                 page=current_page,
                 user_id=user_id,
                 user_email=user_email,
@@ -99,7 +99,22 @@ class StreamlitIntegration:
             st.session_state["_pf_open"] = False
 
     def _upload_screenshot(self, file) -> str | None:
+        import logging
         import requests
+
+        _logger = logging.getLogger("platform_feedback")
+        MAX_SIZE = 5 * 1024 * 1024  # 5 MB
+
+        data = file.getvalue()
+        if len(data) > MAX_SIZE:
+            st.warning("Screenshot too large (max 5 MB). Skipping upload.")
+            return None
+
+        content_type = getattr(file, "type", None) or "image/png"
+        if not content_type.startswith("image/"):
+            st.warning("Only image files are allowed for screenshots.")
+            return None
+
         try:
             res = requests.post(
                 f"{self.config.url}/upload-url",
@@ -108,10 +123,12 @@ class StreamlitIntegration:
                 timeout=10,
             )
             urls = res.json()
-            requests.put(urls["upload_url"], data=file.getvalue(),
-                         headers={"Content-Type": "image/png"}, timeout=30)
+            requests.put(urls["upload_url"], data=data,
+                         headers={"Content-Type": content_type}, timeout=30)
             return urls["public_url"]
-        except Exception:
+        except Exception as e:
+            _logger.debug(f"platform-feedback: screenshot upload failed: {e}")
+            st.warning("Screenshot upload failed. Feedback will be submitted without it.")
             return None
 
     def submit_error(self, exc: Exception, page: str = None):

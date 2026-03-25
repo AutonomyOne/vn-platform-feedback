@@ -24,13 +24,13 @@ FEEDBACK_ENV=staging                 # staging | production
 ## Python — Install
 
 ```bash
-pip install git+https://github.com/your-org/platform-feedback.git#subdirectory=python
+pip install git+https://github.com/AutonomyOne/vn-platform-feedback.git#subdirectory=python
 ```
 
 ## JS — Install
 
 ```bash
-npm install github:your-org/platform-feedback#path=js
+npm install github:AutonomyOne/vn-platform-feedback#path=js
 ```
 
 ---

@@ -1,5 +1,6 @@
 import os
 from dataclasses import dataclass
+from urllib.parse import urlparse
 
 
 @dataclass
@@ -22,8 +23,15 @@ class FeedbackConfig:
             raise EnvironmentError(
                 f"platform-feedback: missing required env vars: {', '.join(missing)}"
             )
+        raw_url = os.environ["FEEDBACK_SERVICE_URL"].rstrip("/")
+        parsed = urlparse(raw_url)
+        if not parsed.scheme or not parsed.netloc:
+            raise ValueError(
+                f"platform-feedback: FEEDBACK_SERVICE_URL is not a valid URL: '{raw_url}'"
+            )
+
         return cls(
-            url=os.environ["FEEDBACK_SERVICE_URL"].rstrip("/"),
+            url=raw_url,
             api_key=os.environ["FEEDBACK_API_KEY"],
             app_name=os.environ["FEEDBACK_APP_NAME"],
             microservice=os.environ["FEEDBACK_MICROSERVICE"],

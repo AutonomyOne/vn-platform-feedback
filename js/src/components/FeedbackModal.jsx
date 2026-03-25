@@ -11,11 +11,15 @@
  */
 
 import { useState, useRef } from "react";
+import { getConfig } from "../config.js";
 
 const TYPE_OPTIONS     = ["bug", "cosmetic", "suggestion"];
 const SEVERITY_OPTIONS = ["critical", "high", "low"];
 const TYPE_LABEL  = { bug: "🐛 Bug", cosmetic: "🎨 Cosmetic", suggestion: "💡 Suggestion" };
 const SEV_LABEL   = { critical: "🔴 Critical", high: "🟠 High", low: "🟡 Low" };
+
+const MAX_SCREENSHOT_BYTES = 5 * 1024 * 1024; // 5 MB
+const ALLOWED_MIME_RE = /^image\/(png|jpe?g|gif|webp)$/;
 
 function getSessionId() {
   if (typeof sessionStorage === "undefined") return "ssr";
@@ -60,13 +64,14 @@ export default function FeedbackModal({ user, appName, appVersion, onClose, onSu
       // Screenshot upload — get presigned URL then upload direct to Spaces
       let screenshotUrl = null;
       if (screenshot) {
+        const cfg = getConfig();
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_FEEDBACK_SERVICE_URL || process.env.VITE_FEEDBACK_SERVICE_URL}/upload-url`,
+          `${cfg.url}/upload-url`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "X-Api-Key": process.env.NEXT_PUBLIC_FEEDBACK_API_KEY || process.env.VITE_FEEDBACK_API_KEY,
+              "X-Api-Key": cfg.apiKey,
             },
             body: JSON.stringify({ filename: screenshot.name }),
           }
@@ -74,7 +79,7 @@ export default function FeedbackModal({ user, appName, appVersion, onClose, onSu
         const { upload_url, public_url } = await res.json();
         await fetch(upload_url, {
           method: "PUT",
-          headers: { "Content-Type": "image/png" },
+          headers: { "Content-Type": screenshot.type || "image/png" },
           body: screenshot,
         });
         screenshotUrl = public_url;
@@ -82,14 +87,18 @@ export default function FeedbackModal({ user, appName, appVersion, onClose, onSu
 
       // Capture Sentry event ID if available
       let sentryEventId = null;
-      try { sentryEventId = window.__SENTRY__?.hub?.lastEventId?.() || null; } catch {}
+      try {
+        sentryEventId = window.__SENTRY__?.hub?.lastEventId?.() || null;
+      } catch (e) {
+        // Sentry not available — safe to ignore
+      }
 
       const payload = {
         submission_type: "user",
         type,
         severity,
-        title,
-        description,
+        title: title.trim().slice(0, 120),
+        description: description.trim().slice(0, 5000),
         screenshot_url: screenshotUrl,
         sentry_event_id: sentryEventId,
         user_id: user?.id || "anonymous",
@@ -155,9 +164,21 @@ export default function FeedbackModal({ user, appName, appVersion, onClose, onSu
           value={description} onChange={e => setDescription(e.target.value)} />
 
         <label style={s.fileLabel}>
-          📎 Attach screenshot (optional)
-          <input type="file" accept="image/*" style={{ display: "none" }}
-            onChange={e => setScreenshot(e.target.files?.[0] || null)} />
+          📎 Attach screenshot (optional, max 5 MB)
+          <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" style={{ display: "none" }}
+            onChange={e => {
+              const file = e.target.files?.[0] || null;
+              if (file && !ALLOWED_MIME_RE.test(file.type)) {
+                setError("Only image files (PNG, JPEG, GIF, WebP) are allowed.");
+                return;
+              }
+              if (file && file.size > MAX_SCREENSHOT_BYTES) {
+                setError("Screenshot must be under 5 MB.");
+                return;
+              }
+              setError(null);
+              setScreenshot(file);
+            }} />
         </label>
         {screenshot && <span style={s.fileName}>{screenshot.name}</span>}
 

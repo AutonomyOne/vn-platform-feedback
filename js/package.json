@@ -6,7 +6,14 @@
   "main": "./src/index.js",
   "exports": {
     ".":            "./src/index.js",
-    "./components": "./src/components/FeedbackButton.jsx"
+    "./components": "./src/components/FeedbackButton.jsx",
+    "./components/FeedbackButton.vue": "./src/components/FeedbackButton.vue",
+    "./react":      "./src/integrations/react.js",
+    "./nextjs":     "./src/integrations/nextjs.js",
+    "./vue":        "./src/integrations/vue.js",
+    "./angular":    "./src/angular/feedback.module.ts",
+    "./express":    "./src/integrations/express.js",
+    "./browser":    "./src/integrations/browser.js"
   },
   "peerDependencies": {
     "react":   ">=18",
@@ -18,8 +25,14 @@
     "vue":              { "optional": true },
     "@angular/core":    { "optional": true }
   },
+  "scripts": {
+    "test": "vitest run"
+  },
   "dependencies": {
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0"
   },
   "keywords": ["feedback", "platform", "bug-reporting"],
   "license": "UNLICENSED"
