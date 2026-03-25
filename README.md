@@ -3,15 +3,56 @@
 Single-import feedback SDK for all platform microservices.
 Auto-detects framework. Zero config beyond 5 env vars.
 
-## Repos
+## Repository Structure
+
+This is a monorepo containing both the Python and JS SDKs:
 
 ```
-platform-feedback/
-    python/   ← pip install (FastAPI, Starlette, Django, Flask, Streamlit, Headless)
-    js/       ← npm install (Next.js, React, Vue 3, Angular 17+, Express, Browser)
+vn-platform-feedback/
+    python/   ← Python SDK (FastAPI, Starlette, Django, Flask, Streamlit, Headless)
+    js/       ← JS SDK (Next.js, React, Vue 3, Angular 17+, Express, Browser)
 ```
 
-## Required Env Vars (all frameworks, identical names)
+All development happens on the `dev` branch. On merge to `main`, CI automatically
+publishes clean dist branches that consumers install from:
+
+- **`js-dist`** — contains only the JS SDK (no tests, no dev tooling)
+- **`python-dist`** — contains only the Python SDK (no tests, no dev tooling)
+
+These dist branches are managed by CI and should never be edited directly.
+
+## Install
+
+### Python
+
+```bash
+pip install git+https://github.com/AutonomyOne/vn-platform-feedback.git@python-dist
+```
+
+Or in `requirements.txt`:
+```
+platform-feedback @ git+https://github.com/AutonomyOne/vn-platform-feedback.git@python-dist
+```
+
+### JS / Next.js / Vue / Angular
+
+```bash
+npm install github:AutonomyOne/vn-platform-feedback#js-dist
+```
+
+Or in `package.json`:
+```json
+{
+  "dependencies": {
+    "platform-feedback": "github:AutonomyOne/vn-platform-feedback#js-dist"
+  }
+}
+```
+
+## Required Env Vars
+
+All frameworks use the same env var names. For Next.js, prefix with `NEXT_PUBLIC_`.
+For Vite, prefix with `VITE_`. See `.env.example` for all variations.
 
 ```env
 FEEDBACK_SERVICE_URL=https://feedback.yourplatform.com
@@ -19,18 +60,6 @@ FEEDBACK_API_KEY=your-secret-key
 FEEDBACK_APP_NAME=vetceedr
 FEEDBACK_MICROSERVICE=backend        # or frontend, auth, api, etc.
 FEEDBACK_ENV=staging                 # staging | production
-```
-
-## Python — Install
-
-```bash
-pip install git+https://github.com/AutonomyOne/vn-platform-feedback.git@python-dist
-```
-
-## JS — Install
-
-```bash
-npm install github:AutonomyOne/vn-platform-feedback#js-dist
 ```
 
 ---
@@ -180,12 +209,47 @@ No feedback logic lives in the microservice.
 
 ---
 
-## Development Setup
+## Development
 
-After cloning, install the pre-push hook:
+### Branch workflow
+
+1. **`dev`** — all development happens here
+2. **PR to `main`** — CI runs lint, tests, and security checks; requires 1 approving review
+3. **Merge to `main`** — CI publishes `js-dist` and `python-dist` branches automatically
+4. Consumer apps install from the dist branches (see Install above)
+
+### Setup
+
+After cloning, install dependencies and the pre-push hook:
 
 ```bash
+# Python
+cd python && python -m venv .venv && .venv/bin/pip install -e ".[test]" && .venv/bin/pip install ruff
+
+# JS
+cd js && npm install
+
+# Git hooks
 ./scripts/setup-hooks.sh
 ```
 
-This runs ruff, eslint, pytest, and vitest before every push to `dev` or `main`. Skip with `git push --no-verify` if needed.
+The pre-push hook runs ruff, eslint, pytest, and vitest before every push to `dev` or `main`.
+Skip with `git push --no-verify` if needed.
+
+### CI
+
+Runs automatically on push to `dev` and PR to `main`:
+
+| Check | Tool | What it does |
+|-------|------|-------------|
+| Python lint | ruff | Import sorting, unused imports, formatting |
+| Python tests | pytest | Unit tests for core modules |
+| Python security | pip-audit | Known vulnerabilities in dependencies |
+| JS lint | eslint | Code quality checks |
+| JS tests | vitest | Unit tests for core modules |
+| JS security | npm audit | Known vulnerabilities in dependencies |
+
+### Branch protection
+
+- **`main`** — requires PR, 1 review, all CI checks passing; force pushes blocked
+- **`js-dist` / `python-dist`** — CI-managed, deletion protected
