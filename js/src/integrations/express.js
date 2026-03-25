@@ -1,11 +1,10 @@
 import { getConfig } from "../config.js";
 import { buildPayload } from "../payload.js";
 import { sendPayloadFireAndForget } from "../client.js";
-
-let _config = null;
+import { setConfig, getStoredConfig } from "../store.js";
 
 export function initExpress(app) {
-  _config = getConfig();
+  setConfig(getConfig());
 
   /**
    * Express error middleware — must be registered LAST, after all routes.
@@ -13,8 +12,9 @@ export function initExpress(app) {
    *
    * Express identifies error middleware by its 4-argument signature (err, req, res, next).
    */
-  app.use((err, req, res, next) => {
-    const payload = buildPayload(_config, {
+  app.use((err, req, _res, next) => {
+    const config = getStoredConfig();
+    const payload = buildPayload(config, {
       submissionType: "programmatic",
       type: "bug",
       severity: "high",
@@ -29,7 +29,7 @@ export function initExpress(app) {
         status: err.status || 500,
       },
     });
-    sendPayloadFireAndForget(_config, payload);
+    sendPayloadFireAndForget(config, payload);
 
     // Pass to Express default error handler
     next(err);
@@ -39,10 +39,11 @@ export function initExpress(app) {
 }
 
 export function submit(options) {
-  if (!_config) return;
-  const payload = buildPayload(_config, {
+  const config = getStoredConfig();
+  if (!config) return;
+  const payload = buildPayload(config, {
     submissionType: "user",
     ...options,
   });
-  sendPayloadFireAndForget(_config, payload);
+  sendPayloadFireAndForget(config, payload);
 }

@@ -17,41 +17,36 @@
  */
 
 import { detectFramework } from "./detector.js";
+import { submit } from "./integrations/browser.js";
+import { initReact, FeedbackErrorBoundary } from "./integrations/react.js";
+import { initNextjs, onAppError } from "./integrations/nextjs.js";
+import { initExpress } from "./integrations/express.js";
+import { PlatformFeedbackPlugin } from "./integrations/vue.js";
+import { PlatformFeedbackModule, FeedbackService, FeedbackErrorHandler } from "./angular/feedback.module.ts";
 
-export { submit } from "./integrations/browser.js";
-export { PlatformFeedbackPlugin } from "./integrations/vue.js";
-export { PlatformFeedbackModule, FeedbackService, FeedbackErrorHandler } from "./angular/feedback.module.ts";
-export { FeedbackErrorBoundary } from "./integrations/react.js";
-export { onAppError } from "./integrations/nextjs.js";
+export { submit, FeedbackErrorBoundary, onAppError, PlatformFeedbackPlugin };
+export { PlatformFeedbackModule, FeedbackService, FeedbackErrorHandler };
 
 export function initFeedback(app = null) {
   const framework = detectFramework();
 
   switch (framework) {
-    case "nextjs": {
-      const { initNextjs } = require("./integrations/nextjs.js");
+    case "nextjs":
       return initNextjs();
-    }
-    case "vue": {
+    case "vue":
       // Vue uses plugin pattern — initFeedback() is a no-op,
       // user installs via app.use(PlatformFeedbackPlugin)
       console.info("[platform-feedback] Vue detected. Use app.use(PlatformFeedbackPlugin) instead.");
       return null;
-    }
-    case "angular": {
+    case "angular":
       // Angular uses module pattern — initFeedback() is a no-op,
       // user imports PlatformFeedbackModule.forRoot()
       console.info("[platform-feedback] Angular detected. Use PlatformFeedbackModule.forRoot().");
       return null;
-    }
-    case "express": {
-      const { initExpress } = require("./integrations/express.js");
+    case "express":
       return initExpress(app);
-    }
-    default: {
+    default:
       // React or generic browser
-      const { initReact } = require("./integrations/react.js");
       return initReact();
-    }
   }
 }

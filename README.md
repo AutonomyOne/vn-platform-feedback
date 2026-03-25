@@ -123,6 +123,19 @@ except Exception as e:
 ---
 
 ### Next.js
+
+The SDK ships raw JSX source. Add `transpilePackages` to your `next.config.mjs`:
+
+```javascript
+// next.config.mjs
+const nextConfig = {
+  transpilePackages: ['platform-feedback'],
+}
+export default nextConfig
+```
+
+Then use in your app:
+
 ```javascript
 // app/layout.jsx
 import { initFeedback } from 'platform-feedback'

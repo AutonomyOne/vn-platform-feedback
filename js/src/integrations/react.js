@@ -1,11 +1,10 @@
 import { getConfig } from "../config.js";
 import { buildPayload } from "../payload.js";
 import { sendPayloadFireAndForget } from "../client.js";
-
-let _config = null;
+import { setConfig, getStoredConfig } from "../store.js";
 
 export function initReact() {
-  _config = getConfig();
+  setConfig(getConfig());
 
   if (typeof window !== "undefined") {
     window.addEventListener("error", (event) => {
@@ -32,23 +31,25 @@ export function initReact() {
 }
 
 function _submitError(options) {
-  if (!_config) return;
-  const payload = buildPayload(_config, {
+  const config = getStoredConfig();
+  if (!config) return;
+  const payload = buildPayload(config, {
     submissionType: "programmatic",
     type: "bug",
     severity: "high",
     ...options,
   });
-  sendPayloadFireAndForget(_config, payload);
+  sendPayloadFireAndForget(config, payload);
 }
 
 export function submit(options) {
-  if (!_config) return;
-  const payload = buildPayload(_config, {
+  const config = getStoredConfig();
+  if (!config) return;
+  const payload = buildPayload(config, {
     submissionType: "user",
     ...options,
   });
-  sendPayloadFireAndForget(_config, payload);
+  sendPayloadFireAndForget(config, payload);
 }
 
 /**
