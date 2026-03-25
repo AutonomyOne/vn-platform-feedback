@@ -1,27 +1,28 @@
 import { getConfig } from "../config.js";
 import { buildPayload } from "../payload.js";
 import { sendPayloadFireAndForget } from "../client.js";
-
-let _config = null;
+import { setConfig, getStoredConfig } from "../store.js";
 
 function _submitError(options) {
-  if (!_config) return;
-  const payload = buildPayload(_config, {
+  const config = getStoredConfig();
+  if (!config) return;
+  const payload = buildPayload(config, {
     submissionType: "programmatic",
     type: "bug",
     severity: "high",
     ...options,
   });
-  sendPayloadFireAndForget(_config, payload);
+  sendPayloadFireAndForget(config, payload);
 }
 
 export function submit(options) {
-  if (!_config) return;
-  const payload = buildPayload(_config, {
+  const config = getStoredConfig();
+  if (!config) return;
+  const payload = buildPayload(config, {
     submissionType: "user",
     ...options,
   });
-  sendPayloadFireAndForget(_config, payload);
+  sendPayloadFireAndForget(config, payload);
 }
 
 /**
@@ -33,10 +34,10 @@ export function submit(options) {
  */
 export const PlatformFeedbackPlugin = {
   install(app) {
-    _config = getConfig();
+    setConfig(getConfig());
 
     // Vue global error handler
-    app.config.errorHandler = (err, instance, info) => {
+    app.config.errorHandler = (err, _instance, info) => {
       _submitError({
         title: err.message?.slice(0, 120) || "Vue error",
         description: err.message || "Unknown",
@@ -49,7 +50,7 @@ export const PlatformFeedbackPlugin = {
     };
 
     // Vue warning handler (dev only — non-critical)
-    app.config.warnHandler = (msg, instance, trace) => {
+    app.config.warnHandler = (msg, _instance, trace) => {
       console.warn("[Vue warn]", msg, trace);
     };
 

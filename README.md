@@ -26,7 +26,11 @@ These dist branches are managed by CI and should never be edited directly.
 ### Python
 
 ```bash
+# Latest from main
 pip install git+https://github.com/AutonomyOne/vn-platform-feedback.git@python-dist
+
+# Pinned to a specific version
+pip install git+https://github.com/AutonomyOne/vn-platform-feedback.git@python-v0.1.0
 ```
 
 Or in `requirements.txt`:
@@ -37,7 +41,11 @@ platform-feedback @ git+https://github.com/AutonomyOne/vn-platform-feedback.git@
 ### JS / Next.js / Vue / Angular
 
 ```bash
+# Latest from main
 npm install github:AutonomyOne/vn-platform-feedback#js-dist
+
+# Pinned to a specific version
+npm install github:AutonomyOne/vn-platform-feedback#js-v0.1.0
 ```
 
 Or in `package.json`:
@@ -47,6 +55,18 @@ Or in `package.json`:
     "platform-feedback": "github:AutonomyOne/vn-platform-feedback#js-dist"
   }
 }
+```
+
+### Checking the installed version
+
+```javascript
+import { version } from 'platform-feedback'
+console.log(version) // "0.1.0"
+```
+
+```python
+from platform_feedback import __version__
+print(__version__)  # "0.1.0"
 ```
 
 ## Required Env Vars
@@ -123,6 +143,19 @@ except Exception as e:
 ---
 
 ### Next.js
+
+The SDK ships raw JSX source. Add `transpilePackages` to your `next.config.mjs`:
+
+```javascript
+// next.config.mjs
+const nextConfig = {
+  transpilePackages: ['platform-feedback'],
+}
+export default nextConfig
+```
+
+Then use in your app:
+
 ```javascript
 // app/layout.jsx
 import { initFeedback } from 'platform-feedback'

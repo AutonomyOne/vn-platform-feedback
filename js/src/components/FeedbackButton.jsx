@@ -12,13 +12,18 @@
 
 import { useState } from "react";
 import FeedbackModal from "./FeedbackModal.jsx";
-import { submit } from "../integrations/browser.js";
+import { getStoredConfig } from "../store.js";
+import { buildPayload } from "../payload.js";
+import { sendPayloadFireAndForget } from "../client.js";
 
 export default function FeedbackButton({ user, style }) {
   const [open, setOpen] = useState(false);
 
   async function handleSubmit(payload) {
-    await submit({ ...payload, submissionType: "user" });
+    const config = getStoredConfig();
+    if (!config) return;
+    const full = buildPayload(config, { ...payload, submissionType: "user" });
+    sendPayloadFireAndForget(config, full);
   }
 
   return (

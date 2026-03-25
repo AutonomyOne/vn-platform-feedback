@@ -4,9 +4,10 @@
   "description": "Single-import feedback SDK for all platform frontend microservices",
   "type": "module",
   "main": "./src/index.js",
+  "types": "./src/index.d.ts",
   "exports": {
-    ".":            "./src/index.js",
-    "./components": "./src/components/FeedbackButton.jsx",
+    ".":            { "types": "./src/index.d.ts", "default": "./src/index.js" },
+    "./components": { "types": "./src/components/index.d.ts", "default": "./src/components/FeedbackButton.jsx" },
     "./components/FeedbackButton.vue": "./src/components/FeedbackButton.vue",
     "./react":      "./src/integrations/react.js",
     "./nextjs":     "./src/integrations/nextjs.js",
