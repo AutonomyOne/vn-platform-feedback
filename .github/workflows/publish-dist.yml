@@ -20,6 +20,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          # Read version from package.json
+          VERSION=$(node -p "require('./js/package.json').version")
+
           # Create a temporary directory with only js/ contents
           TMPDIR=$(mktemp -d)
           cp -r js/* "$TMPDIR/"
@@ -36,10 +39,14 @@ jobs:
           git rm -rf .
           cp -r "$TMPDIR/"* .
           git add -A
-          git commit -m "js-dist: ${COMMIT_MSG} (${COMMIT_SHA})"
+          git commit -m "js-dist v${VERSION}: ${COMMIT_MSG} (${COMMIT_SHA})"
 
           # Force-push to js-dist
           git push origin HEAD:js-dist --force
+
+          # Create/update version tag
+          git tag -f "js-v${VERSION}"
+          git push origin "js-v${VERSION}" --force
 
   publish-python-dist:
     name: Publish python-dist
@@ -51,10 +58,22 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Build and push python-dist branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Read version from pyproject.toml
+          VERSION=$(python -c "
+          import re
+          with open('python/pyproject.toml') as f:
+              m = re.search(r'version\s*=\s*\"(.+?)\"', f.read())
+              print(m.group(1))
+          ")
 
           # Create a temporary directory with only python/ contents
           TMPDIR=$(mktemp -d)
@@ -72,7 +91,11 @@ jobs:
           git rm -rf .
           cp -r "$TMPDIR/"* .
           git add -A
-          git commit -m "python-dist: ${COMMIT_MSG} (${COMMIT_SHA})"
+          git commit -m "python-dist v${VERSION}: ${COMMIT_MSG} (${COMMIT_SHA})"
 
           # Force-push to python-dist
           git push origin HEAD:python-dist --force
+
+          # Create/update version tag
+          git tag -f "python-v${VERSION}"
+          git push origin "python-v${VERSION}" --force

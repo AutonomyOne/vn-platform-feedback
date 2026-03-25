@@ -24,6 +24,8 @@ import { initExpress } from "./integrations/express.js";
 import { PlatformFeedbackPlugin } from "./integrations/vue.js";
 import { PlatformFeedbackModule, FeedbackService, FeedbackErrorHandler } from "./angular/feedback.module.ts";
 
+export const version = "0.1.0";
+
 export { submit, FeedbackErrorBoundary, onAppError, PlatformFeedbackPlugin };
 export { PlatformFeedbackModule, FeedbackService, FeedbackErrorHandler };
 

@@ -1,5 +1,8 @@
 // Type declarations for platform-feedback SDK
 
+/** SDK version string (semver). */
+export const version: string;
+
 export interface FeedbackConfig {
   url: string;
   apiKey: string;
