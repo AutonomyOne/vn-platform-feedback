@@ -177,3 +177,15 @@ initExpress(app)
 4. Done
 
 No feedback logic lives in the microservice.
+
+---
+
+## Development Setup
+
+After cloning, install the pre-push hook:
+
+```bash
+./scripts/setup-hooks.sh
+```
+
+This runs ruff, eslint, pytest, and vitest before every push to `dev` or `main`. Skip with `git push --no-verify` if needed.

@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+#
+# pre-push hook — runs lint + tests before allowing push to dev or main.
+# Skips security audits (slow) — those run in CI only.
+#
+# Install:  cp scripts/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+# Or:       ./scripts/setup-hooks.sh
+# Skip:     git push --no-verify  (use sparingly)
+
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+
+# Only gate pushes to dev and main
+while read -r _ _ remote_ref _; do
+    case "$remote_ref" in
+        refs/heads/dev|refs/heads/main) ;;
+        *) exit 0 ;;
+    esac
+done
+
+echo "=== pre-push: running lint + tests ==="
+
+# --- Python ---
+echo ""
+echo "--- Python lint (ruff) ---"
+if command -v ruff &>/dev/null; then
+    ruff check "$ROOT/python"
+    ruff format --check "$ROOT/python"
+elif [ -x "$ROOT/python/.venv/bin/ruff" ]; then
+    "$ROOT/python/.venv/bin/ruff" check "$ROOT/python"
+    "$ROOT/python/.venv/bin/ruff" format --check "$ROOT/python"
+else
+    echo "WARN: ruff not found — skipping Python lint"
+fi
+
+echo ""
+echo "--- Python tests (pytest) ---"
+if [ -x "$ROOT/python/.venv/bin/pytest" ]; then
+    "$ROOT/python/.venv/bin/pytest" "$ROOT/python/tests/" -q
+elif command -v pytest &>/dev/null; then
+    pytest "$ROOT/python/tests/" -q
+else
+    echo "WARN: pytest not found — skipping Python tests"
+fi
+
+# --- JS (run from js/ so eslint finds its config) ---
+if [ -d "$ROOT/js/node_modules" ]; then
+    echo ""
+    echo "--- JS lint (eslint) ---"
+    (cd "$ROOT/js" && npx eslint src/)
+
+    echo ""
+    echo "--- JS tests (vitest) ---"
+    (cd "$ROOT/js" && npx vitest run)
+else
+    echo ""
+    echo "WARN: js/node_modules not found — run 'npm install' in js/. Skipping JS checks."
+fi
+
+echo ""
+echo "=== pre-push: all checks passed ==="
