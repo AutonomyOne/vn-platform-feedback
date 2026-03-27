@@ -8,7 +8,7 @@ Auto-detects framework. Zero config beyond 5 env vars.
 This is a monorepo containing both the Python and JS SDKs:
 
 ```
-vn-platform-feedback/
+codebase-fback-inapp/
     python/   ← Python SDK (FastAPI, Starlette, Django, Flask, Streamlit, Headless)
     js/       ← JS SDK (Next.js, React, Vue 3, Angular 17+, Express, Browser)
 ```
@@ -27,32 +27,32 @@ These dist branches are managed by CI and should never be edited directly.
 
 ```bash
 # Latest from main
-pip install git+https://github.com/AutonomyOne/vn-platform-feedback.git@python-dist
+pip install git+https://github.com/verinexis-ltd/codebase-fback-inapp.git@python-dist
 
 # Pinned to a specific version
-pip install git+https://github.com/AutonomyOne/vn-platform-feedback.git@python-v0.1.0
+pip install git+https://github.com/verinexis-ltd/codebase-fback-inapp.git@python-v0.1.0
 ```
 
 Or in `requirements.txt`:
 ```
-platform-feedback @ git+https://github.com/AutonomyOne/vn-platform-feedback.git@python-dist
+platform-feedback @ git+https://github.com/verinexis-ltd/codebase-fback-inapp.git@python-dist
 ```
 
 ### JS / Next.js / Vue / Angular
 
 ```bash
 # Latest from main
-npm install github:AutonomyOne/vn-platform-feedback#js-dist
+npm install github:verinexis-ltd/codebase-fback-inapp#js-dist
 
 # Pinned to a specific version
-npm install github:AutonomyOne/vn-platform-feedback#js-v0.1.0
+npm install github:verinexis-ltd/codebase-fback-inapp#js-v0.1.0
 ```
 
 Or in `package.json`:
 ```json
 {
   "dependencies": {
-    "platform-feedback": "github:AutonomyOne/vn-platform-feedback#js-dist"
+    "platform-feedback": "github:verinexis-ltd/codebase-fback-inapp#js-dist"
   }
 }
 ```
